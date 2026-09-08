@@ -4,3 +4,5 @@ def validar_campos(dados, campos_obrigatorios):
             return False
 
     return True
+
+#commit teste

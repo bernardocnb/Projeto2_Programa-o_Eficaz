@@ -8,10 +8,15 @@ load_dotenv()
 
 
 def get_connection():
+    db_port = os.getenv('DB_PORT')
+
+    if not db_port:
+        raise RuntimeError('DB_PORT não foi definido no arquivo .env')
+
     return mysql.connector.connect(
         host=os.getenv('DB_HOST'),
-        port=int(os.getenv('DB_PORT', '3306')),
+        port=int(db_port),
         user=os.getenv('DB_USER'),
         password=os.getenv('DB_PASSWORD'),
         database=os.getenv('DB_NAME')
-    )
+    ) 

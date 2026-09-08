@@ -63,3 +63,33 @@ def listar_imoveis():
     finally:
         cursor.close()
         conexao.close()
+def buscar_imovel_por_id(imovel_id):
+    conexao = get_connection()
+    cursor = conexao.cursor()
+
+    consulta = '''
+        SELECT
+            id,
+            logradouro,
+            tipo_logradouro,
+            bairro,
+            cidade,
+            cep,
+            tipo,
+            valor,
+            data_aquisicao
+        FROM imoveis
+        WHERE id = %s
+    '''
+
+    try:
+        cursor.execute(consulta, (imovel_id,))
+        linha = cursor.fetchone()
+
+        if linha is None:
+            return None
+
+        return converter_linha_em_imovel(linha)
+    finally:
+        cursor.close()
+        conexao.close()

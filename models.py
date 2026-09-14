@@ -159,3 +159,47 @@ def buscar_imoveis_por_cidade(cidade):
     finally:
         cursor.close()
         conexao.close()
+
+def adicionar_imovel(dados):
+    conexao = get_connection()
+    cursor = conexao.cursor()
+
+    comando = '''
+        INSERT INTO imoveis (
+            logradouro,
+            tipo_logradouro,
+            bairro,
+            cidade,
+            cep,
+            tipo,
+            valor,
+            data_aquisicao
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+    '''
+
+    valores = (
+        dados['logradouro'],
+        dados['tipo_logradouro'],
+        dados['bairro'],
+        dados['cidade'],
+        dados['cep'],
+        dados['tipo'],
+        dados['valor'],
+        dados['data_aquisicao']
+    )
+
+    try:
+        cursor.execute(comando, valores)
+        conexao.commit()
+
+        return {
+            'id': cursor.lastrowid,
+            **dados
+        }
+    except Exception:
+        conexao.rollback()
+        raise
+    finally:
+        cursor.close()
+        conexao.close()

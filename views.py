@@ -1,6 +1,7 @@
 from flask import jsonify
 
 import models
+from utils import possui_campos_obrigatorios
 
 
 def index():
@@ -28,4 +29,18 @@ def buscar_imovel_por_id(imovel_id):
         }), 404
 
     return jsonify(imovel), 200
-    
+
+def adicionar_imovel(dados):
+    if dados is None:
+        return jsonify({
+            'erro': 'JSON inválido ou não enviado'
+        }), 400
+
+    if not possui_campos_obrigatorios(dados):
+        return jsonify({
+            'erro': 'Campos obrigatórios não foram informados'
+        }), 400
+
+    imovel_criado = models.adicionar_imovel(dados)
+
+    return jsonify(imovel_criado), 201

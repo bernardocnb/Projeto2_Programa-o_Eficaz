@@ -17,6 +17,12 @@ def listar_imoveis():
     cidade = request.args.get('cidade')
     return views.listar_imoveis(tipo, cidade)
 
+@app.route('/imoveis', methods=['POST'])
+def adicionar_imovel():
+    dados = request.get_json(silent=True)
+
+    return views.adicionar_imovel(dados)
+
 @app.route('/imoveis/<int:imovel_id>', methods=['GET'])
 def buscar_imovel_por_id(imovel_id):
     return views.buscar_imovel_por_id(imovel_id)

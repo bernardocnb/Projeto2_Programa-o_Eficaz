@@ -64,7 +64,7 @@ def listar_imoveis():
         cursor.close()
         conexao.close()
 
-        
+
 def buscar_imovel_por_id(imovel_id):
     conexao = get_connection()
     cursor = conexao.cursor()
@@ -92,6 +92,70 @@ def buscar_imovel_por_id(imovel_id):
             return None
 
         return converter_linha_em_imovel(linha)
+    finally:
+        cursor.close()
+        conexao.close()
+
+
+def buscar_imoveis_por_tipo(tipo):
+    conexao = get_connection()
+    cursor = conexao.cursor()
+
+    consulta = '''
+        SELECT
+            id,
+            logradouro,
+            tipo_logradouro,
+            bairro,
+            cidade,
+            cep,
+            tipo,
+            valor,
+            data_aquisicao
+        FROM imoveis
+        WHERE tipo = %s
+    '''
+
+    try:
+        cursor.execute(consulta, (tipo,))
+        linhas = cursor.fetchall()
+
+        return [
+            converter_linha_em_imovel(linha)
+            for linha in linhas
+        ]
+    finally:
+        cursor.close()
+        conexao.close()
+
+
+def buscar_imoveis_por_cidade(cidade):
+    conexao = get_connection()
+    cursor = conexao.cursor()
+
+    consulta = '''
+        SELECT
+            id,
+            logradouro,
+            tipo_logradouro,
+            bairro,
+            cidade,
+            cep,
+            tipo,
+            valor,
+            data_aquisicao
+        FROM imoveis
+        WHERE cidade = %s
+    '''
+
+    try:
+        cursor.execute(consulta, (cidade,))
+        linhas = cursor.fetchall()
+
+        return [
+            converter_linha_em_imovel(linha)
+            for linha in linhas
+        ]
     finally:
         cursor.close()
         conexao.close()

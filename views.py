@@ -9,8 +9,13 @@ def index():
     }), 200
 
 
-def listar_imoveis():
-    imoveis = models.listar_imoveis()
+def listar_imoveis(tipo=None, cidade=None):
+    if tipo:
+        imoveis = models.buscar_imoveis_por_tipo(tipo)
+    elif cidade:
+        imoveis = models.buscar_imoveis_por_cidade(cidade)
+    else:
+        imoveis = models.listar_imoveis()
 
     return jsonify(imoveis), 200
 

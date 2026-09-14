@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 
 import views
 
@@ -13,7 +13,9 @@ def index():
 
 @app.route('/imoveis', methods=['GET'])
 def listar_imoveis():
-    return views.listar_imoveis()
+    tipo = request.args.get('tipo')
+    cidade = request.args.get('cidade')
+    return views.listar_imoveis(tipo, cidade)
 
 @app.route('/imoveis/<int:imovel_id>', methods=['GET'])
 def buscar_imovel_por_id(imovel_id):

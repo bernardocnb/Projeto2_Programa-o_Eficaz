@@ -63,6 +63,8 @@ def listar_imoveis():
     finally:
         cursor.close()
         conexao.close()
+
+        
 def buscar_imovel_por_id(imovel_id):
     conexao = get_connection()
     cursor = conexao.cursor()

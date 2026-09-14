@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from pathlib import Path
 
 ENV_PATH = Path(__file__).resolve().parent.parent / '.env'
-load_dotenv()
+load_dotenv(ENV_PATH)
 
 
 def get_connection():

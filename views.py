@@ -5,7 +5,7 @@ import models
 
 def index():
     return jsonify({
-        'mensagem': 'API de imóveis funcionando'
+        'mensagem': 'API de imoveis funcionando'
     }), 200
 
 
@@ -23,3 +23,4 @@ def buscar_imovel_por_id(imovel_id):
         }), 404
 
     return jsonify(imovel), 200
+    

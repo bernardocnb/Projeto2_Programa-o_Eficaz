@@ -19,6 +19,5 @@ def listar_imoveis():
 def buscar_imovel_por_id(imovel_id):
     return views.buscar_imovel_por_id(imovel_id)
 
-
 if __name__ == '__main__':
     app.run(debug=True)

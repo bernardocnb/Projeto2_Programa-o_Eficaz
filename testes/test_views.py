@@ -77,3 +77,48 @@ def test_buscar_imovel_inexistente(mock_buscar, client):
         'erro': 'Imóvel não encontrado'
     }
     mock_buscar.assert_called_once_with(999)
+
+@patch('models.buscar_imoveis_por_tipo', create=True)
+def test_buscar_imoveis_por_tipo(mock_buscar, client):
+    mock_buscar.return_value = [
+        {
+            'id': 1,
+            'logradouro': 'Paulista',
+            'tipo_logradouro': 'Avenida',
+            'bairro': 'Bela Vista',
+            'cidade': 'São Paulo',
+            'cep': '01310-100',
+            'tipo': 'apartamento',
+            'valor': 800000.0,
+            'data_aquisicao': '2024-01-15'
+        }
+    ]
+
+    resposta = client.get('/imoveis?tipo=apartamento')
+
+    assert resposta.status_code == 200
+    assert resposta.get_json() == mock_buscar.return_value
+    mock_buscar.assert_called_once_with('apartamento')
+
+
+@patch('models.buscar_imoveis_por_cidade', create=True)
+def test_buscar_imoveis_por_cidade(mock_buscar, client):
+    mock_buscar.return_value = [
+        {
+            'id': 2,
+            'logradouro': 'Brasil',
+            'tipo_logradouro': 'Avenida',
+            'bairro': 'Centro',
+            'cidade': 'Campinas',
+            'cep': '13010-001',
+            'tipo': 'casa',
+            'valor': 600000.0,
+            'data_aquisicao': '2023-06-20'
+        }
+    ]
+
+    resposta = client.get('/imoveis?cidade=Campinas')
+
+    assert resposta.status_code == 200
+    assert resposta.get_json() == mock_buscar.return_value
+    mock_buscar.assert_called_once_with('Campinas')

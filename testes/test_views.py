@@ -122,3 +122,59 @@ def test_buscar_imoveis_por_cidade(mock_buscar, client):
     assert resposta.status_code == 200
     assert resposta.get_json() == mock_buscar.return_value
     mock_buscar.assert_called_once_with('Campinas')
+
+@patch('models.adicionar_imovel', create=True)
+def test_adicionar_imovel(mock_adicionar, client):
+    novo_imovel = {
+        'logradouro': 'Faria Lima',
+        'tipo_logradouro': 'Avenida',
+        'bairro': 'Itaim Bibi',
+        'cidade': 'São Paulo',
+        'cep': '04538-132',
+        'tipo': 'apartamento',
+        'valor': 950000.0,
+        'data_aquisicao': '2025-03-10'
+    }
+
+    imovel_criado = {
+        'id': 3,
+        **novo_imovel
+    }
+
+    mock_adicionar.return_value = imovel_criado
+
+    resposta = client.post('/imoveis', json=novo_imovel)
+
+    assert resposta.status_code == 201
+    assert resposta.get_json() == imovel_criado
+    mock_adicionar.assert_called_once_with(novo_imovel)
+
+
+@patch('models.adicionar_imovel', create=True)
+def test_adicionar_imovel_sem_json(mock_adicionar, client):
+    resposta = client.post('/imoveis')
+
+    assert resposta.status_code == 400
+    assert resposta.get_json() == {
+        'erro': 'JSON inválido ou não enviado'
+    }
+
+    mock_adicionar.assert_not_called()
+
+
+@patch('models.adicionar_imovel', create=True)
+def test_adicionar_imovel_com_campo_faltando(mock_adicionar, client):
+    dados_incompletos = {
+        'logradouro': 'Faria Lima',
+        'tipo_logradouro': 'Avenida',
+        'bairro': 'Itaim Bibi'
+    }
+
+    resposta = client.post('/imoveis', json=dados_incompletos)
+
+    assert resposta.status_code == 400
+    assert resposta.get_json() == {
+        'erro': 'Campos obrigatórios não foram informados'
+    }
+
+    mock_adicionar.assert_not_called()

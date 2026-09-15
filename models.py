@@ -203,3 +203,75 @@ def adicionar_imovel(dados):
     finally:
         cursor.close()
         conexao.close()
+
+def atualizar_imovel(imovel_id, dados):
+    imovel_existente = buscar_imovel_por_id(imovel_id)
+
+    if imovel_existente is None:
+        return None
+
+    conexao = get_connection()
+    cursor = conexao.cursor()
+
+    comando = '''
+        UPDATE imoveis
+        SET
+            logradouro = %s,
+            tipo_logradouro = %s,
+            bairro = %s,
+            cidade = %s,
+            cep = %s,
+            tipo = %s,
+            valor = %s,
+            data_aquisicao = %s
+        WHERE id = %s
+    '''
+
+    valores = (
+        dados['logradouro'],
+        dados['tipo_logradouro'],
+        dados['bairro'],
+        dados['cidade'],
+        dados['cep'],
+        dados['tipo'],
+        dados['valor'],
+        dados['data_aquisicao'],
+        imovel_id
+    )
+
+    try:
+        cursor.execute(comando, valores)
+        conexao.commit()
+    except Exception:
+        conexao.rollback()
+        raise
+    finally:
+        cursor.close()
+        conexao.close()
+
+    return {
+        **dados,
+        'id': imovel_id
+    }
+
+def remover_imovel(imovel_id):
+    conexao = get_connection()
+    cursor = conexao.cursor()
+
+    comando = '''
+        DELETE FROM imoveis
+        WHERE id = %s
+    '''
+
+    try:
+        cursor.execute(comando, (imovel_id,))
+        removido = cursor.rowcount > 0
+        conexao.commit()
+
+        return removido
+    except Exception:
+        conexao.rollback()
+        raise
+    finally:
+        cursor.close()
+        conexao.close()

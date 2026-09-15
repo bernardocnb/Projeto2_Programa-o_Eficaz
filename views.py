@@ -44,3 +44,36 @@ def adicionar_imovel(dados):
     imovel_criado = models.adicionar_imovel(dados)
 
     return jsonify(imovel_criado), 201
+
+def atualizar_imovel(imovel_id, dados):
+    if not isinstance(dados, dict):
+        return jsonify({
+            'erro': 'JSON inválido ou não enviado'
+        }), 400
+
+    if not possui_campos_obrigatorios(dados):
+        return jsonify({
+            'erro': 'Campos obrigatórios não foram informados'
+        }), 400
+
+    imovel_atualizado = models.atualizar_imovel(
+        imovel_id,
+        dados
+    )
+
+    if imovel_atualizado is None:
+        return jsonify({
+            'erro': 'Imóvel não encontrado'
+        }), 404
+
+    return jsonify(imovel_atualizado), 200
+
+def remover_imovel(imovel_id):
+    removido = models.remover_imovel(imovel_id)
+
+    if not removido:
+        return jsonify({
+            'erro': 'Imóvel não encontrado'
+        }), 404
+
+    return '', 204

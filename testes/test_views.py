@@ -178,3 +178,116 @@ def test_adicionar_imovel_com_campo_faltando(mock_adicionar, client):
     }
 
     mock_adicionar.assert_not_called()
+
+DADOS_IMOVEL_VALIDOS = {
+    'logradouro': 'Faria Lima',
+    'tipo_logradouro': 'Avenida',
+    'bairro': 'Itaim Bibi',
+    'cidade': 'São Paulo',
+    'cep': '04538-132',
+    'tipo': 'apartamento',
+    'valor': 950000.0,
+    'data_aquisicao': '2025-03-10'
+}
+
+
+@patch('models.atualizar_imovel')
+def test_atualizar_imovel(mock_atualizar, client):
+    imovel_atualizado = {
+        'id': 1,
+        **DADOS_IMOVEL_VALIDOS
+    }
+
+    mock_atualizar.return_value = imovel_atualizado
+
+    resposta = client.put(
+        '/imoveis/1',
+        json=DADOS_IMOVEL_VALIDOS
+    )
+
+    assert resposta.status_code == 200
+    assert resposta.get_json() == imovel_atualizado
+    mock_atualizar.assert_called_once_with(
+        1,
+        DADOS_IMOVEL_VALIDOS
+    )
+
+
+@patch('models.atualizar_imovel')
+def test_atualizar_imovel_inexistente(mock_atualizar, client):
+    mock_atualizar.return_value = None
+
+    resposta = client.put(
+        '/imoveis/999',
+        json=DADOS_IMOVEL_VALIDOS
+    )
+
+    assert resposta.status_code == 404
+    assert resposta.get_json() == {
+        'erro': 'Imóvel não encontrado'
+    }
+
+    mock_atualizar.assert_called_once_with(
+        999,
+        DADOS_IMOVEL_VALIDOS
+    )
+
+
+@patch('models.atualizar_imovel')
+def test_atualizar_imovel_sem_json(mock_atualizar, client):
+    resposta = client.put('/imoveis/1')
+
+    assert resposta.status_code == 400
+    assert resposta.get_json() == {
+        'erro': 'JSON inválido ou não enviado'
+    }
+
+    mock_atualizar.assert_not_called()
+
+
+@patch('models.atualizar_imovel')
+def test_atualizar_imovel_com_campo_faltando(
+    mock_atualizar,
+    client
+):
+    dados_incompletos = {
+        'logradouro': 'Faria Lima',
+        'cidade': 'São Paulo'
+    }
+
+    resposta = client.put(
+        '/imoveis/1',
+        json=dados_incompletos
+    )
+
+    assert resposta.status_code == 400
+    assert resposta.get_json() == {
+        'erro': 'Campos obrigatórios não foram informados'
+    }
+
+    mock_atualizar.assert_not_called()
+
+
+@patch('models.remover_imovel')
+def test_remover_imovel(mock_remover, client):
+    mock_remover.return_value = True
+
+    resposta = client.delete('/imoveis/1')
+
+    assert resposta.status_code == 204
+    assert resposta.data == b''
+    mock_remover.assert_called_once_with(1)
+
+
+@patch('models.remover_imovel')
+def test_remover_imovel_inexistente(mock_remover, client):
+    mock_remover.return_value = False
+
+    resposta = client.delete('/imoveis/999')
+
+    assert resposta.status_code == 404
+    assert resposta.get_json() == {
+        'erro': 'Imóvel não encontrado'
+    }
+
+    mock_remover.assert_called_once_with(999)
